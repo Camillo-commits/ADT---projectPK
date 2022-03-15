@@ -1,16 +1,14 @@
 package com.adbt.adbtproject.entities;
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
 
-import io.swagger.models.Contact;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.repository.cdi.Eager;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import java.util.List;
 import java.util.Set;
 
 @Document(collection = "users")
@@ -25,14 +23,12 @@ public class User {
     private  String surname;
 
     private ContactInfo contactInfo;
+    private Address address;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roleSet;
 
-    public User(String name, String surname) {
-        this.name = name;
-        this.surname = surname;
-    }
-
+    @ElementCollection(fetch = FetchType.EAGER)
+    List<Order> orders;
 
 }

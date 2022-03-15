@@ -5,16 +5,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class Centre {
+public class ShelfPosition {
 
     @Id
     private String id;
 
-    List<Warehouse> warehouseList;
+    private String name;
+
+    private long index;
+
+    private int quantity;
 
 }

@@ -10,11 +10,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class Centre {
-
+public class Category {
     @Id
     private String id;
 
-    List<Warehouse> warehouseList;
+    private String name;
 
+    private List<ItemGroup> items;
 }
