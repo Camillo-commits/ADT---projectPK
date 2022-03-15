@@ -5,14 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 @RequiredArgsConstructor
-public class ContactInfo {
+public class Address {
 
     @Id
     private String id;
-
-    private String telNumber;
-    private String email;
-
-
-
 }
