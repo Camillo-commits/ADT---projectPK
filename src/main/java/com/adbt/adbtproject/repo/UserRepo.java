@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface UserRepo extends MongoRepository<User, String> {
 
-    User getUserById(String id);
     List<User> getUsersByName(String name);
     List<User>  getUsersBySurname(String surname);
 

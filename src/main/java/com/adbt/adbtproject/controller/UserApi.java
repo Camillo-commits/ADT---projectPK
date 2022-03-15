@@ -2,6 +2,7 @@ package com.adbt.adbtproject.controller;
 
 import com.adbt.adbtproject.entities.User;
 import com.adbt.adbtproject.repo.UserRepo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,25 +24,24 @@ public class UserApi {
 
     @GetMapping("/name/{name}")
     public ResponseEntity<List<User>> getUserByName(@PathVariable String name) {
-        return new ResponseEntity<>(userRepo.getUsersByName(name), HttpStatus.OK);
+        return new ResponseEntity(userRepo.getUsersByName(name), HttpStatus.OK);
     }
 
     @GetMapping("/surname/{surname}")
     public ResponseEntity<List<User>> getUserBySurname(@PathVariable String surname) {
-        return new ResponseEntity<>(userRepo.getUsersBySurname(surname), HttpStatus.OK);
+        return new ResponseEntity(userRepo.getUsersBySurname(surname), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id) {
-        return new ResponseEntity<>(userRepo.getUserById(id), HttpStatus.OK);
+        return new ResponseEntity(userRepo.findById(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User userDetails) {
-        User user = userRepo.getUserById(id);
+        User user = userRepo.findById(id).get();
 
-        user.setName(userDetails.getName());
-        user.setSurname(userDetails.getSurname());
+        BeanUtils.copyProperties(userDetails, user);
 
         return ResponseEntity.ok(userRepo.save(user));
     }

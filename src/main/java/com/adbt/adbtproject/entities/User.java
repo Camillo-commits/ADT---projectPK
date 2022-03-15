@@ -1,6 +1,7 @@
 package com.adbt.adbtproject.entities;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -18,14 +19,18 @@ import java.util.Set;
 public class User {
 
     @Id
-    private  String id;
-    private  String name;
-    private  String surname;
-
+    private String id;
+    @NonNull
+    private String name;
+    @NonNull
+    private String surname;
+    @NonNull
     private ContactInfo contactInfo;
+    @NonNull
     private Address address;
 
     @ElementCollection(fetch = FetchType.EAGER)
+    @NonNull
     private Set<Role> roleSet;
 
     @ElementCollection(fetch = FetchType.EAGER)
