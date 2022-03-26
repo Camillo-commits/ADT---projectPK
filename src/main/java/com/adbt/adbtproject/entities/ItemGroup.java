@@ -9,6 +9,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
@@ -24,13 +25,14 @@ public class ItemGroup {
     private Double price;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> properties;
+    private Set<String> properties;
 
+    //TODO: why map does not work
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<Warehouse, ShelfPosition> placement;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<Vendor> vendors;
+    private Set<Vendor> vendors;
 
     public int allAvailability() {
         AtomicInteger count = new AtomicInteger(0);

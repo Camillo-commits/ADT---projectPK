@@ -16,7 +16,7 @@ public class Address {
     @Id
     private String id;
     @NonNull
-    private String Country;
+    private String country;
     @NonNull
     private String city;
     @NonNull

@@ -1,16 +1,13 @@
 package com.adbt.adbtproject.entities;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
 import java.sql.Date;
-import java.util.List;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class Order {
@@ -24,12 +21,11 @@ public class Order {
 
     private Date dateOfRetrieval;
 
-    private List<User> workers;
+    //TODO: fix adding user when workers itemGroups and items in order
+/*    private Set<User> workers;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    List<ItemGroup> itemGroups;
+    private Set<ItemGroup> itemGroups;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    List<Item> items;
+    private Set<Item> items;*/
 
 }
