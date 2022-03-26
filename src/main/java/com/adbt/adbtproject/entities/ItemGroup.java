@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,9 +23,14 @@ public class ItemGroup {
 
     private Double price;
 
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> properties;
 
-    Map<Warehouse, ShelfPosition> placement;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<Warehouse, ShelfPosition> placement;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Vendor> vendors;
 
     public int allAvailability() {
         AtomicInteger count = new AtomicInteger(0);

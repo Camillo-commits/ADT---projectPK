@@ -5,13 +5,15 @@ import com.adbt.adbtproject.repo.UserRepo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping(path = "api/users", consumes = {"*/*"})
 public class UserApi {
 
     @Autowired
@@ -48,6 +50,8 @@ public class UserApi {
 
     @PostMapping
     public User createEmployee(@RequestBody User user) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
     }
 

@@ -1,6 +1,16 @@
 package com.adbt.adbtproject.entities;
 
-public enum Role {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
 
-    ROLE_ADMIN, ROLE_USER, ROLE_WORKER;
+@Data
+@AllArgsConstructor
+public class Role implements GrantedAuthority {
+    private RoleOptions role;
+
+    @Override
+    public String getAuthority() {
+        return role.toString();
+    }
 }

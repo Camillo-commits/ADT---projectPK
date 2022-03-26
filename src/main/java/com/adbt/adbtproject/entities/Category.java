@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -16,5 +18,6 @@ public class Category {
 
     private String name;
 
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<ItemGroup> items;
 }
