@@ -1,8 +1,7 @@
 package com.adbt.adbtproject.controller;
 
-import com.adbt.adbtproject.entities.ItemGroup;
-import com.adbt.adbtproject.entities.User;
-import com.adbt.adbtproject.entities.Warehouse;
+import com.adbt.adbtproject.entities.*;
+import com.adbt.adbtproject.repo.CategoryRepo;
 import com.adbt.adbtproject.repo.ItemGroupRepo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,9 @@ public class ItemGroupApi {
 
     @Autowired
     ItemGroupRepo itemsRepo;
+
+    @Autowired
+    CategoryRepo categoryRepo;
 
     @GetMapping("/{id}")
     public ResponseEntity<Integer> getItemCount(@PathVariable String id) {
@@ -49,6 +51,24 @@ public class ItemGroupApi {
         BeanUtils.copyProperties(itemGroupRequest, itemGroup);
 
         return ResponseEntity.ok(itemsRepo.save(itemGroup));
+    }
+
+    @GetMapping("/percentageByCategory/{id}")
+    public ResponseEntity<String> getPercentageOfItemGroupByCategory(@PathVariable String id) {
+        Optional<Category> category = categoryRepo.findById(id);
+        int amountOfItemGroupsByCategory = category.get().getItems().size();
+        int amountOfAllItemGroups = itemsRepo.findAll().size();
+
+        if(amountOfAllItemGroups == 0){
+            return new ResponseEntity<>("No itemGroups found", HttpStatus.NO_CONTENT);
+        }
+        else if(amountOfItemGroupsByCategory == 0){
+            return new ResponseEntity<>("No itemGroups found for selected category", HttpStatus.NO_CONTENT);
+        }
+        else{
+            double percent = (((double) amountOfItemGroupsByCategory)/amountOfAllItemGroups) * 100;
+            return new ResponseEntity<>(percent + "%", HttpStatus.OK);
+        }
     }
 
 }
