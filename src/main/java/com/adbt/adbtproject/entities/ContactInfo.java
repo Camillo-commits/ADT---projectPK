@@ -2,9 +2,7 @@ package com.adbt.adbtproject.entities;
 
 
 import com.adbt.adbtproject.entities.validate.EmailValidator;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +11,8 @@ import javax.validation.constraints.Email;
 
 import java.io.Serializable;
 
+@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @Validated

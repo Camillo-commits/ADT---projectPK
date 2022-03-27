@@ -24,7 +24,9 @@ public class SuperApi {
 
     @GetMapping
     public ResponseEntity<HttpStatus> initDatabase() {
-        userRepo.save(new User("Jan", "Kowalski", new ContactInfo("1234", "jan@kowalski.pl"), new Address("PL", "KRK", "Warszawska", "130", "34-300"), Set.of(Role.ROLE_USER)));
+        userRepo.save(new User("id","Jan", "Kowalski", "password", new ContactInfo("1234", "jan@kowalski.pl"),
+                new Address("PL", "KRK", "Warszawska", "130", "34-300"),
+                Set.of(new Role(RoleOptions.ROLE_USER)), Set.of()));
         centreRepo.save(new Centre(List.of(
                 new Warehouse(new Address("PL", "KRK", "Pawia", "22", "34-300"), new ContactInfo("3333", "warehouse@center.com")),
                 new Warehouse(new Address("PL", "Zamość", "Pawia", "22", "34-300"), new ContactInfo("666", "warehouseZ@center.com"))
