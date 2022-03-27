@@ -1,15 +1,21 @@
 package com.adbt.adbtproject.controller;
 
+import com.adbt.adbtproject.entities.ContactInfo;
 import com.adbt.adbtproject.entities.User;
+import com.adbt.adbtproject.entities.validate.EmailValidator;
 import com.adbt.adbtproject.repo.UserRepo;
+import com.mongodb.MongoWriteException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.*;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "api/users", consumes = {"*/*"})
@@ -48,11 +54,22 @@ public class UserApi {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user,  BindingResult result) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        //TODO email validation
-        return userRepo.save(user);
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<ContactInfo>> constraintViolations = validator.validate(user.getContactInfo(), EmailValidator.class);
+
+        try {
+            if (result.hasErrors() || !constraintViolations.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            userRepo.save(user);
+        } catch (RuntimeException exception) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{id}")

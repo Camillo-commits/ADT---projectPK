@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
 import java.sql.Date;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
@@ -21,11 +22,11 @@ public class Order {
 
     private Date dateOfRetrieval;
 
-    //TODO: fix adding user when workers itemGroups and items in order
-/*    private Set<User> workers;
+    //TODO: fix adding user when workers and itemGroups in order
+  /*  private Set<User> workers;*/
 
-    private Set<ItemGroup> itemGroups;
+   /* private Set<ItemGroup> itemGroups;*/
 
-    private Set<Item> items;*/
+    private Set<Item> items;
 
 }
