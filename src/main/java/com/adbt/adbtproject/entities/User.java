@@ -28,7 +28,6 @@ public class User implements Serializable {
     @NotEmpty
     private String password;
 
-    @Indexed(unique = true)
     @NotNull
     private ContactInfo contactInfo;
 
