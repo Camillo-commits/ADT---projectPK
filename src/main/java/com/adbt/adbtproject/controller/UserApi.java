@@ -56,7 +56,11 @@ public class UserApi {
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody @Valid User user,  BindingResult result) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        try {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<ContactInfo>> constraintViolations = validator.validate(user.getContactInfo(), EmailValidator.class);

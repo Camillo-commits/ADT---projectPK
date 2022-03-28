@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -40,4 +41,10 @@ public class User implements Serializable {
     @Nullable
     private Set<Order> orders;
 
+    public void addOrder(Order order) {
+        if(orders == null) {
+            orders = new HashSet<>();
+        }
+        orders.add(order);
+    }
 }

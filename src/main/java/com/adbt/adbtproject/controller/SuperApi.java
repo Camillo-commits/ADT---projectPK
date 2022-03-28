@@ -27,9 +27,9 @@ public class SuperApi {
         userRepo.save(new User("id","Jan", "Kowalski", "password", new ContactInfo("1234", "jan@kowalski.pl"),
                 new Address("PL", "KRK", "Warszawska", "130", "34-300"),
                 Set.of(new Role(RoleOptions.ROLE_USER)), Set.of()));
-        centreRepo.save(new Centre(List.of(
-                new Warehouse(new Address("PL", "KRK", "Pawia", "22", "34-300"), new ContactInfo("3333", "warehouse@center.com")),
-                new Warehouse(new Address("PL", "Zamość", "Pawia", "22", "34-300"), new ContactInfo("666", "warehouseZ@center.com"))
+        centreRepo.save(new Centre(Set.of(
+                new Warehouse("name1", new Address("PL", "KRK", "Pawia", "22", "34-300"), new ContactInfo("3333", "warehouse@center.com")),
+                new Warehouse("name2", new Address("PL", "Zamość", "Pawia", "22", "34-300"), new ContactInfo("666", "warehouseZ@center.com"))
         )));
         return new ResponseEntity(HttpStatus.OK);
     }

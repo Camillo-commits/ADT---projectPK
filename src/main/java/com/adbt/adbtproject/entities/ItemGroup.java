@@ -1,9 +1,11 @@
 package com.adbt.adbtproject.entities;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.mongodb.BasicDBObject;
+import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
@@ -15,11 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@Document("Items")
 public class ItemGroup {
 
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String name;
 
     private Double price;
@@ -27,16 +31,24 @@ public class ItemGroup {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> properties;
 
-    //TODO: why map does not work
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<Warehouse, ShelfPosition> placement;
+    private Set<Position> placement;
 
-    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Vendor> vendors;
 
     public int allAvailability() {
         AtomicInteger count = new AtomicInteger(0);
-        placement.values().forEach(shelf -> count.set(count.get() + shelf.getQuantity()));
+        placement.forEach(position -> {
+            count.set(count.get() + position.getValue().getQuantity());
+        });
         return count.get();
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Position {
+        @DocumentReference(collection = "warehouse")
+        private Warehouse key;
+        private ShelfPosition value;
     }
 }

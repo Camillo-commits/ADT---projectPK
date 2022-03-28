@@ -11,4 +11,5 @@ public interface WarehouseRepo extends MongoRepository<Warehouse, String> {
     List<Warehouse> getAllByAddressNotNull();
     void deleteById(String id);
     List<Warehouse> findAll();
+    Warehouse getWarehouseByName(String name);
 }

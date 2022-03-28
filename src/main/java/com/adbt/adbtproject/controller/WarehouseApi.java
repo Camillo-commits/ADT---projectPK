@@ -1,20 +1,15 @@
 package com.adbt.adbtproject.controller;
 
-import com.adbt.adbtproject.entities.Address;
-import com.adbt.adbtproject.entities.ContactInfo;
-import com.adbt.adbtproject.entities.Warehouse;
-import com.adbt.adbtproject.repo.WarehouseRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import com.adbt.adbtproject.entities.Warehouse;
 import com.adbt.adbtproject.repo.WarehouseRepo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +31,7 @@ public class WarehouseApi {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createWarehouse(@RequestBody Warehouse warehouse) {
+    public ResponseEntity<HttpStatus> createWarehouse(@RequestBody @Valid Warehouse warehouse, BindingResult result) {
         warehouseRepo.save(warehouse);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.FetchType;
@@ -21,6 +22,6 @@ public class Category {
     @Indexed(direction = IndexDirection.ASCENDING)
     private String name;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @DocumentReference(collection = "Items")
     private List<ItemGroup> items;
 }
