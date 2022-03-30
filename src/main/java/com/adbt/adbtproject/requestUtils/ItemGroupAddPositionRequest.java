@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class ItemGroupAddPositionRequest {
 
-    private String itemName;
     private String warehouseName;
     private ShelfPosition shelfPosition;
 

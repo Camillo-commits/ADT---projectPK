@@ -4,8 +4,6 @@ import com.adbt.adbtproject.entities.ContactInfo;
 import com.adbt.adbtproject.entities.User;
 import com.adbt.adbtproject.entities.validate.EmailValidator;
 import com.adbt.adbtproject.repo.UserRepo;
-import com.mongodb.MongoWriteException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -48,13 +47,19 @@ public class UserApi {
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User userDetails) {
         User user = userRepo.findById(id).get();
 
-        BeanUtils.copyProperties(userDetails, user);
+        Optional.ofNullable(userDetails.getPassword()).ifPresent(user::setPassword);
+        Optional.ofNullable(userDetails.getContactInfo()).ifPresent(user::setContactInfo);
+        Optional.ofNullable(userDetails.getName()).ifPresent(user::setName);
+        Optional.ofNullable(userDetails.getAddress()).ifPresent(user::setAddress);
+        Optional.ofNullable(userDetails.getOrders()).ifPresent(user::setOrders);
+        Optional.ofNullable(userDetails.getRoleSet()).ifPresent(user::setRoleSet);
+        Optional.ofNullable(userDetails.getSurname()).ifPresent(user::setSurname);
 
         return ResponseEntity.ok(userRepo.save(user));
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid User user,  BindingResult result) {
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user, BindingResult result) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         try {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));

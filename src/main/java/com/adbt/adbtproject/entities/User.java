@@ -3,7 +3,6 @@ package com.adbt.adbtproject.entities;
 import com.mongodb.lang.Nullable;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotEmpty;
@@ -41,7 +40,7 @@ public class User implements Serializable {
     private Set<Order> orders;
 
     public void addOrder(Order order) {
-        if(orders == null) {
+        if (orders == null) {
             orders = new HashSet<>();
         }
         orders.add(order);

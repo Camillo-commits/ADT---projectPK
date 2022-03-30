@@ -8,6 +8,9 @@ import java.util.List;
 public interface ItemGroupRepo extends MongoRepository<ItemGroup, String> {
 
     ItemGroup getItemGroupByName(String name);
+
     List<ItemGroup> getItemGroupsByPriceBetween(Double lower, Double upper);
+
+    ItemGroup getItemGroupById(String id);
 
 }

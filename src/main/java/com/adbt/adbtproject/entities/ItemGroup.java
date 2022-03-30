@@ -1,16 +1,11 @@
 package com.adbt.adbtproject.entities;
 
-import com.mongodb.BasicDBObject;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,7 +23,6 @@ public class ItemGroup {
 
     private Double price;
 
-    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> properties;
 
     private Set<Position> placement;

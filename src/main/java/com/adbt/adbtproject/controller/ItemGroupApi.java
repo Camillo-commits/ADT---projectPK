@@ -1,6 +1,9 @@
 package com.adbt.adbtproject.controller;
 
-import com.adbt.adbtproject.entities.*;
+import com.adbt.adbtproject.entities.Category;
+import com.adbt.adbtproject.entities.ItemGroup;
+import com.adbt.adbtproject.entities.ShelfPosition;
+import com.adbt.adbtproject.entities.Warehouse;
 import com.adbt.adbtproject.repo.CategoryRepo;
 import com.adbt.adbtproject.repo.ItemGroupRepo;
 import com.adbt.adbtproject.repo.WarehouseRepo;
@@ -36,13 +39,13 @@ public class ItemGroupApi {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> createItemGroup(@RequestBody ItemGroupAddRequest request) {
+    public ResponseEntity<ItemGroup> createItemGroup(@RequestBody ItemGroupAddRequest request) {
         String warehouseName = request.getWarehouseName();
         ItemGroup itemGroup = request.getItemGroup();
         ShelfPosition shelfPosition = request.getShelfPosition();
         Warehouse warehouse = warehouseRepo.getWarehouseByName(warehouseName);
         Set<ItemGroup.Position> positions = itemGroup.getPlacement();
-        if(positions == null) {
+        if (positions == null) {
             positions = new HashSet<>();
             positions.add(new ItemGroup.Position(warehouse, shelfPosition));
             itemGroup.setPlacement(positions);
@@ -50,27 +53,26 @@ public class ItemGroupApi {
             positions.add(new ItemGroup.Position(warehouse, shelfPosition));
         }
 
-        itemsRepo.save(itemGroup);
-        return new ResponseEntity<>(HttpStatus.OK);
+        itemGroup = itemsRepo.save(itemGroup);
+        return new ResponseEntity<>(itemGroup, HttpStatus.CREATED);
     }
 
-    @PostMapping("/position")
-    public ResponseEntity<HttpStatus> addPostion(@RequestBody ItemGroupAddPositionRequest request) {
-        String itemName = request.getItemName();
+    @PostMapping("/{uuid}/position")
+    public ResponseEntity<ItemGroup> addPostion(@RequestBody ItemGroupAddPositionRequest request, @PathVariable String uuid) {
         String warehouseName = request.getWarehouseName();
         ShelfPosition shelfPosition = request.getShelfPosition();
-        ItemGroup itemGroup = itemsRepo.getItemGroupByName(itemName);
+        ItemGroup itemGroup = itemsRepo.getItemGroupById(uuid);
         Warehouse warehouse = warehouseRepo.getWarehouseByName(warehouseName);
         Set<ItemGroup.Position> positions = itemGroup.getPlacement();
-        if(positions == null) {
+        if (positions == null) {
             positions = new HashSet<>();
             positions.add(new ItemGroup.Position(warehouse, shelfPosition));
             itemGroup.setPlacement(positions);
         } else {
             positions.add(new ItemGroup.Position(warehouse, shelfPosition));
         }
-        itemsRepo.save(itemGroup);
-        return new ResponseEntity<>(HttpStatus.OK);
+        itemGroup = itemsRepo.save(itemGroup);
+        return new ResponseEntity<>(itemGroup, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -99,14 +101,12 @@ public class ItemGroupApi {
         int amountOfItemGroupsByCategory = category.get().getItems().size();
         int amountOfAllItemGroups = itemsRepo.findAll().size();
 
-        if(amountOfAllItemGroups == 0){
+        if (amountOfAllItemGroups == 0) {
             return new ResponseEntity<>("No itemGroups found", HttpStatus.NO_CONTENT);
-        }
-        else if(amountOfItemGroupsByCategory == 0){
+        } else if (amountOfItemGroupsByCategory == 0) {
             return new ResponseEntity<>("No itemGroups found for selected category", HttpStatus.NO_CONTENT);
-        }
-        else{
-            double percent = (((double) amountOfItemGroupsByCategory)/amountOfAllItemGroups) * 100;
+        } else {
+            double percent = (((double) amountOfItemGroupsByCategory) / amountOfAllItemGroups) * 100;
             return new ResponseEntity<>(percent + "%", HttpStatus.OK);
         }
     }

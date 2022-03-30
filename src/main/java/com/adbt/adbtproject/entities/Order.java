@@ -23,7 +23,6 @@ public class Order {
 
     private Date dateOfRetrieval;
 
-    //TODO: fix adding user when workers and itemGroups in order
     @DocumentReference(collection = "users", lazy = true)
     private Set<User> workers;
 

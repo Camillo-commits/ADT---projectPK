@@ -5,19 +5,12 @@ import com.adbt.adbtproject.entities.Centre;
 import com.adbt.adbtproject.entities.Warehouse;
 import com.adbt.adbtproject.repo.CentreRepo;
 import com.adbt.adbtproject.repo.WarehouseRepo;
-import com.adbt.adbtproject.requestUtils.AddCentreRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/centre")
@@ -30,16 +23,33 @@ public class CentreController {
     WarehouseRepo warehouseRepo;
 
     @PostMapping
-    public ResponseEntity<Centre> addCentre(@RequestBody AddCentreRequest request) {
-        String[] warehouseNames = request.getWarehouseNames();
-        Centre centre = request.getCentre();
-        Set<Warehouse> warehouseList = new HashSet<>();
-        for(String name : warehouseNames) {
-            warehouseList.add(warehouseRepo.getWarehouseByName(name));
+    public ResponseEntity<Centre> addCentre(@RequestBody Centre centre) {
+        Set<Warehouse> warehouses = centre.getWarehouses();
+        if (warehouses != null) {
+            List<Warehouse> warehouseList = warehouseRepo.saveAll(warehouses);
+            centre.setWarehouses(new HashSet<>(warehouseList));
         }
-        centre.setWarehouseList(warehouseList);
-        centreRepo.save(centre);
+        centre = centreRepo.save(centre);
         return new ResponseEntity(centre, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> addCentre(@RequestBody Centre centre, @PathVariable String id) {
+        Optional<Centre> dbOptionalCentre = centreRepo.findById(id);
+        if (dbOptionalCentre.isPresent()) {
+            Centre dbCentre = dbOptionalCentre.get();
+            Optional.ofNullable(centre.getAddress()).ifPresent(dbCentre::setAddress);
+            Set<Warehouse> warehouses = centre.getWarehouses();
+            if (warehouses != null) {
+                warehouses.stream().filter(Objects::nonNull).forEach(warehouse -> {
+                    warehouseRepo.save(warehouse);
+                });
+                dbCentre.setWarehouses(warehouses);
+            }
+            dbCentre = centreRepo.save(dbCentre);
+            return new ResponseEntity<>(dbCentre.toString(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Id not correct", HttpStatus.BAD_REQUEST);
     }
 
 }

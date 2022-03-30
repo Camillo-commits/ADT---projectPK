@@ -1,6 +1,9 @@
 package com.adbt.adbtproject.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,19 +11,19 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.util.Set;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Document("Centre")
+
+@Document("centres")
 public class Centre {
 
     @Id
     private String id;
 
-    @NonNull
     @DocumentReference(collection = "warehouse")
-    Set<Warehouse> warehouseList;
+    Set<Warehouse> warehouses;
 
     @Indexed(unique = true)
     Address address;
