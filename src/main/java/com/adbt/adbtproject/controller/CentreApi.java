@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/centre")
-public class CentreController {
+@RequestMapping("/api/centres")
+public class CentreApi {
 
     @Autowired
     CentreRepo centreRepo;

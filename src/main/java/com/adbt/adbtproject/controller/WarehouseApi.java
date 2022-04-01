@@ -39,6 +39,7 @@ public class WarehouseApi {
     @PutMapping("/{id}")
     public ResponseEntity<Warehouse> updateWarehouse(@PathVariable String id, @RequestBody Warehouse warehouse) {
         Warehouse warehouseNew = warehouseRepo.findById(id).get();
+        //TODO do not use copy utils -> might override data that is not in body but is in db
         BeanUtils.copyProperties(warehouse, warehouseNew);
         warehouseNew.setId(id);
 

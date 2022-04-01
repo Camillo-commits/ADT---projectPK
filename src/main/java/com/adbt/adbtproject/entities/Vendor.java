@@ -17,6 +17,7 @@ public class Vendor {
 
     private String name;
 
-    private ContactInfo contactInfo;
+    private NotUniqueContactInfo contactInfo;
+
     private Address address;
 }

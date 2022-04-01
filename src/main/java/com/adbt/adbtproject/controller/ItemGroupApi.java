@@ -39,18 +39,26 @@ public class ItemGroupApi {
     }
 
     @PostMapping
-    public ResponseEntity<ItemGroup> createItemGroup(@RequestBody ItemGroupAddRequest request) {
+    public ResponseEntity<Object> createItemGroup(@RequestBody ItemGroupAddRequest request) {
         String warehouseName = request.getWarehouseName();
         ItemGroup itemGroup = request.getItemGroup();
         ShelfPosition shelfPosition = request.getShelfPosition();
         Warehouse warehouse = warehouseRepo.getWarehouseByName(warehouseName);
         Set<ItemGroup.Position> positions = itemGroup.getPlacement();
-        if (positions == null) {
-            positions = new HashSet<>();
-            positions.add(new ItemGroup.Position(warehouse, shelfPosition));
-            itemGroup.setPlacement(positions);
+        if (warehouse != null) {
+            if (positions == null) {
+                positions = new HashSet<>();
+                positions.add(new ItemGroup.Position(warehouse, shelfPosition));
+                itemGroup.setPlacement(positions);
+            } else {
+                positions.add(new ItemGroup.Position(warehouse, shelfPosition));
+            }
         } else {
-            positions.add(new ItemGroup.Position(warehouse, shelfPosition));
+            return new ResponseEntity<>("Warehouse name wrong or not provided", HttpStatus.BAD_REQUEST);
+        }
+        ItemGroup nullIfCopy = itemsRepo.getItemGroupByName(itemGroup.getName());
+        if (nullIfCopy != null) {
+            return new ResponseEntity<>("Item already exists", HttpStatus.CONFLICT);
         }
 
         itemGroup = itemsRepo.save(itemGroup);

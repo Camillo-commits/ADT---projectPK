@@ -28,6 +28,6 @@ public class Warehouse {
     @NonNull
     private Address address;
     @NonNull
-    private ContactInfo contactInfo;
+    private NotUniqueContactInfo contactInfo;
 
 }
