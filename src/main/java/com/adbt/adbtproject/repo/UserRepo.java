@@ -22,4 +22,6 @@ public interface UserRepo extends MongoRepository<User, String> {
     User getUserByOrders_Id(String id);
 
     List<User> getUsersByOrders_Workers(User worker);
+
+    List<User> getUsersByAddress_Country(String country);
 }
