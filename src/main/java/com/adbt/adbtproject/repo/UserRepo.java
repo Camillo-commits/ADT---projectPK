@@ -18,4 +18,8 @@ public interface UserRepo extends MongoRepository<User, String> {
     List<User> getUsersBySurname(String surname);
 
     List<User> getUsersByOrders_TodoIsTrue();
+
+    User getUserByOrders_Id(String id);
+
+    List<User> getUsersByOrders_Workers(User worker);
 }

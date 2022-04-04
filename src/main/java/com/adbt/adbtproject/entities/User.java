@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -44,5 +45,18 @@ public class User implements Serializable {
             orders = new HashSet<>();
         }
         orders.add(order);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return id.equals(user.id) && contactInfo.equals(user.contactInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, contactInfo);
     }
 }
