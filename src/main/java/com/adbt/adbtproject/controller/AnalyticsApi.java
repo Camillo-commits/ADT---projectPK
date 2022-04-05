@@ -46,6 +46,11 @@ public class AnalyticsApi {
         return new ResponseEntity<>(getUserByCountry(false), HttpStatus.OK);
     }
 
+    @GetMapping("/topWorkersByNumberOfOrdersDelivered/{workersNumber}")
+    public ResponseEntity<Map<User, Integer>> getTopWorkersByNumberOfOrdersDelivered(@PathVariable Integer workersNumber) {
+        return new ResponseEntity<>(getTopWorkersByNumberOfOrders(workersNumber), HttpStatus.OK);
+    }
+
     private Map<String, User> getUserByCountry(boolean isBest) {
         List<User> users = userRepo.findAll();
         Set<String> countries = users.stream().map(u -> u.getAddress().getCountry()).collect(Collectors.toSet());
@@ -64,11 +69,6 @@ public class AnalyticsApi {
         }
 
         return usersByCountry;
-    }
-
-    @GetMapping("/topWorkersByNumberOfOrdersDelivered/{workersNumber}")
-    public ResponseEntity<Map<User, Integer>> getTopWorkersByNumberOfOrdersDelivered(@PathVariable Integer workersNumber) {
-        return new ResponseEntity<>(getTopWorkersByNumberOfOrders(workersNumber), HttpStatus.OK);
     }
 
     public Map<User, Integer> getTopWorkersByNumberOfOrders(Integer workersNumber) {
