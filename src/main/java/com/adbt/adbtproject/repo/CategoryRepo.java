@@ -7,4 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface CategoryRepo extends MongoRepository<Category, String> {
 
     Category getCategoryById(String id);
+    Category getCategoryByName(String name);
 }

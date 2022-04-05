@@ -19,7 +19,7 @@ public class Category {
     @Id
     private String id;
 
-    @Indexed(direction = IndexDirection.ASCENDING)
+    @Indexed(direction = IndexDirection.ASCENDING, unique = true)
     private String name;
 
     @DocumentReference(collection = "Items", lazy = true)
