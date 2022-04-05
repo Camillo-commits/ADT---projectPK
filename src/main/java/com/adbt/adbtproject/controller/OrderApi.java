@@ -251,7 +251,11 @@ public class OrderApi {
         return new ResponseEntity<>("Worker not found", HttpStatus.BAD_REQUEST);
     }
 
+
     private String generateId(User user, Order order, Date date) {
         return String.format("%s-%s-%s", user.getContactInfo().getEmail(), order.getItemGroups().size(), date.getTime());
     }
+
+
 }
+
