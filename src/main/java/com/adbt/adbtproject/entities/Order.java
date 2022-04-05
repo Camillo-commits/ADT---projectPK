@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -31,8 +32,8 @@ public class Order {
     @DocumentReference(collection = "users", lazy = true)
     private Set<User> workers;
 
-    private Set<ItemGroup> itemGroups;
+    private List<NotUniqueItemGroup> itemGroups;
 
-    private Set<Item> items;
+    private List<Item> items;
 
 }

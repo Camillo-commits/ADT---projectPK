@@ -5,6 +5,9 @@ import com.adbt.adbtproject.entities.User;
 import com.adbt.adbtproject.entities.validate.EmailValidator;
 import com.adbt.adbtproject.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.IndexInfo;
+import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +24,7 @@ import java.util.Set;
 public class UserApi {
 
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {

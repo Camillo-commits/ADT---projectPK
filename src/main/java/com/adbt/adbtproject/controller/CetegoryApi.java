@@ -23,11 +23,11 @@ public class CetegoryApi {
     @Autowired
     ItemGroupRepo itemGroupRepo;
 
-    @PutMapping("/{categoryName}/item/{itemName}")
-    public ResponseEntity<Object> addItemToCategory(@PathVariable String categoryName, @PathVariable String itemName) {
+    @PutMapping("/{categoryName}/item/{itemId}")
+    public ResponseEntity<Object> addItemToCategory(@PathVariable String categoryName, @PathVariable String itemId) {
         Category category = categoryRepo.getCategoryByName(categoryName);
         if (category != null) {
-            ItemGroup item = itemGroupRepo.getItemGroupByName(itemName);
+            ItemGroup item = itemGroupRepo.getItemGroupById(itemId);
             List<ItemGroup> items = category.getItems();
             if (items == null) {
                 items = new ArrayList<>();
@@ -71,7 +71,7 @@ public class CetegoryApi {
             }
 
             ItemGroup item = itemGroupRepo.getItemGroupByName(itemName);
-            if(items.remove(item)){
+            if (items.remove(item)) {
                 categoryRepo.save(category);
                 return new ResponseEntity<>("Item removed", HttpStatus.OK);
             } else {

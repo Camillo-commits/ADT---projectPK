@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.adbt.adbtproject.entities.RoleOptions.ROLE_SHIFT_MANAGER;
 import static com.adbt.adbtproject.entities.RoleOptions.ROLE_WORKER;
 
 @RestController
@@ -32,16 +31,17 @@ public class OrderApi {
         Order order = request.getOrder();
         ContactInfo userDetails = request.getUserDetails();
         AtomicBoolean allItemsAvailable = new AtomicBoolean(true);
-        Set<ItemGroup> items = new HashSet<>();
+        List<NotUniqueItemGroup> items = new ArrayList<>();
         order.getItemGroups().forEach(item -> {
             ItemGroup itemGroup = itemGroupRepo.getItemGroupByName(item.getName());
             if (itemGroup.allAvailability() == 0) {
                 allItemsAvailable.set(false);
             }
-            items.add(itemGroup);
+            items.add(new NotUniqueItemGroup(itemGroup));
         });
         items.forEach(item -> item.setId(null));
         order.setItemGroups(items);
+        order.setItems(new ArrayList<>(items.size()));
         Date date = new Date();
         order.setDateOfOrder(date);
         order.setTodo(true);
@@ -54,7 +54,7 @@ public class OrderApi {
         } else {
             return new ResponseEntity<>("Item not available", HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>("Order placed: " + order, HttpStatus.CREATED);
+        return new ResponseEntity<>(order, HttpStatus.CREATED);
     }
 
     @GetMapping("/todo")
@@ -113,15 +113,15 @@ public class OrderApi {
                 .filter(ord -> ord.getId().equals(orderId)).findAny();
         if (orderOpt.isPresent()) {
             Order order = orderOpt.get();
-            Set<Item> itemSet = order.getItems();
-            if(itemSet == null) {
-                itemSet = new HashSet<>();
-                order.setItems(itemSet);
+            List<Item> itemList = order.getItems();
+            if (itemList == null) {
+                itemList = new ArrayList<>(order.getItemGroups().size());
+                order.setItems(itemList);
             }
-            if(items.size() > order.getItemGroups().size()) {
+            if (items.size() + itemList.size() > order.getItemGroups().size()) {
                 return new ResponseEntity<>("Too much items added", HttpStatus.CONFLICT);
             }
-            itemSet.addAll(items);
+            itemList.addAll(items);
             userRepo.save(user);
             return new ResponseEntity<>("Order updated", HttpStatus.OK);
         } else {
