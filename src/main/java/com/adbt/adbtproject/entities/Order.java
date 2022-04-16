@@ -29,6 +29,8 @@ public class Order {
 
     private boolean todo;
 
+    private double totalPrice;
+
     @DocumentReference(collection = "users", lazy = true)
     private Set<User> workers;
 

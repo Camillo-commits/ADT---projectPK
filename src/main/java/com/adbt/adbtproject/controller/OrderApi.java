@@ -42,6 +42,7 @@ public class OrderApi {
         items.forEach(item -> item.setId(null));
         order.setItemGroups(items);
         order.setItems(new ArrayList<>(items.size()));
+        order.setTotalPrice(items.stream().map(NotUniqueItemGroup::getPrice).mapToDouble(Double::doubleValue).sum());
         Date date = new Date();
         order.setDateOfOrder(date);
         order.setTodo(true);
