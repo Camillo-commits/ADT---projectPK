@@ -44,7 +44,7 @@ public class AnalyticsApi {
     @Autowired
     private CentreRepo centreRepo;
 
-    @GetMapping("/topCustomerByNumberInCountry")
+    @GetMapping("/topCustomerByMoneyInCountry")
     public ResponseEntity<Object> getBestUserInCountryByOrderNumber() {
         MongoClient mongoClient = MongoClients.create(DB_URI);
         MongoDatabase database = mongoClient.getDatabase("warehouse");
@@ -53,6 +53,7 @@ public class AnalyticsApi {
         collection.aggregate(Arrays.asList(
                 Aggregates.match(Filters.exists("orders")),
                 Aggregates.unwind("$orders"),
+                Aggregates.match(Filters.eq("orders.todo", false)),
                 Aggregates.group("$contactInfo", Accumulators.sum("totalSum", "$orders.totalPrice"), Accumulators.first("nationality", "$address.country")),
                 Aggregates.sort(Sorts.ascending("totalSum")),
                 Aggregates.group("$nationality", Accumulators.max("maxSum", "$totalSum"), Accumulators.last("user", "$_id")),
@@ -64,7 +65,7 @@ public class AnalyticsApi {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/worstCustomerByNumberInCountry")
+    @GetMapping("/worstCustomerByMoneyInCountry")
     public ResponseEntity<Object> getWorstUserInCountryByOrderNumber() {
         MongoClient mongoClient = MongoClients.create(DB_URI);
         MongoDatabase database = mongoClient.getDatabase("warehouse");
@@ -73,10 +74,51 @@ public class AnalyticsApi {
         collection.aggregate(Arrays.asList(
                 Aggregates.match(Filters.exists("orders")),
                 Aggregates.unwind("$orders"),
+                Aggregates.match(Filters.eq("orders.todo", false)),
                 Aggregates.group("$contactInfo", Accumulators.sum("totalSum", "$orders.totalPrice"), Accumulators.first("nationality", "$address.country")),
                 Aggregates.sort(Sorts.ascending("totalSum")),
                 Aggregates.group("$nationality", Accumulators.min("maxSum", "$totalSum"), Accumulators.first("user", "$_id")),
 
+                Aggregates.out("result")
+
+        )).forEach(document -> result.add(document.toJson()));
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/topCustomersByFinishedOrdersInCountry")
+    public ResponseEntity<Object> getTopCustomersByFinishedOrders() {
+        MongoClient mongoClient = MongoClients.create(DB_URI);
+        MongoDatabase database = mongoClient.getDatabase("warehouse");
+        MongoCollection<Document> collection = database.getCollection("users");
+        List<String> result = new ArrayList<>();
+        collection.aggregate(Arrays.asList(
+                Aggregates.match(Filters.exists("orders")),
+                Aggregates.unwind("$orders"),
+                Aggregates.match(Filters.eq("orders.todo", false)),
+                Aggregates.group("$contactInfo", Accumulators.addToSet("orders", "$orders"), Accumulators.first("nationality", "$address.country")),
+                Aggregates.sort(Sorts.ascending("orders")),
+                Aggregates.group("$nationality", Accumulators.last("user", "$_id")),
+                Aggregates.out("result")
+
+        )).forEach(document -> result.add(document.toJson()));
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/worstCustomersByFinishedOrdersInCountry")
+    public ResponseEntity<Object> getWorstCustomersByFinishedOrders() {
+        MongoClient mongoClient = MongoClients.create(DB_URI);
+        MongoDatabase database = mongoClient.getDatabase("warehouse");
+        MongoCollection<Document> collection = database.getCollection("users");
+        List<String> result = new ArrayList<>();
+        collection.aggregate(Arrays.asList(
+                Aggregates.match(Filters.exists("orders")),
+                Aggregates.unwind("$orders"),
+                Aggregates.match(Filters.eq("orders.todo", false)),
+                Aggregates.group("$contactInfo", Accumulators.addToSet("orders", "$orders"), Accumulators.first("nationality", "$address.country")),
+                Aggregates.sort(Sorts.descending("orders")),
+                Aggregates.group("$nationality", Accumulators.last("user", "$_id")),
                 Aggregates.out("result")
 
         )).forEach(document -> result.add(document.toJson()));
