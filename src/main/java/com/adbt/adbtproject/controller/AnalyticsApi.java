@@ -138,7 +138,7 @@ public class AnalyticsApi {
                 Aggregates.unwind("$orders"),
                 Aggregates.match(Filters.exists("orders.dateOfCollection")),
                 Aggregates.group("$_id", Accumulators.addToSet("orders", "$orders")),
-                Aggregates.sort(Sorts.ascending("orders")),
+                Aggregates.sort(Sorts.descending("orders")),
                 Aggregates.out("result")
 
         )).forEach(document -> result.add(document.toJson()));
