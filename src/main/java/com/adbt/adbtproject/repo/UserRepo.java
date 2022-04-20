@@ -13,6 +13,8 @@ public interface UserRepo extends MongoRepository<User, String> {
 
     User getUserByContactInfo_Email(String email);
 
+    User getUserByContactInfo_TelNumber(String number);
+
     List<User> getUsersByName(String name);
 
     List<User> getUsersBySurname(String surname);

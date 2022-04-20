@@ -13,11 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Collections;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -32,6 +27,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
+    private static final String ADMIN = "ADMIN";
+
+    private static final String USER = "USER";
+
+    private static final String WORKER = "WORKER";
+
+    private static final String SHIFT_MANAGER = "SHIFT_MANAGER";
+
+
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -44,6 +48,40 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/users/worker").hasRole(ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/users").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/users/*").hasRole(ADMIN)
+                .antMatchers(HttpMethod.PUT, "/api/users/*").hasRole(ADMIN)
+
+                .antMatchers(HttpMethod.GET, "/api/analytics/*").hasAnyRole(ADMIN, SHIFT_MANAGER)
+
+                .antMatchers(HttpMethod.POST, "/api/centres/*").hasRole(ADMIN)
+                .antMatchers(HttpMethod.POST, "/api/centres").hasRole(ADMIN)
+                .antMatchers(HttpMethod.PUT, "/api/centres/*").hasRole(ADMIN)
+
+                .antMatchers(HttpMethod.GET, "/api/category/*").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/category/*").hasRole(ADMIN)
+                .antMatchers(HttpMethod.DELETE, "/api/category/*").hasRole(ADMIN)
+
+                .antMatchers(HttpMethod.GET, "/api/items").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/items/*").hasAnyRole(ADMIN, SHIFT_MANAGER)
+                .antMatchers(HttpMethod.POST, "/api/items").hasRole(ADMIN)
+                .antMatchers(HttpMethod.POST, "/api/items/*").hasRole(ADMIN)
+                .antMatchers(HttpMethod.DELETE, "/api/items/*").hasRole(ADMIN)
+
+                .antMatchers(HttpMethod.POST, "/api/orders").hasRole(USER)
+                .antMatchers(HttpMethod.GET, "/api/orders/todo").hasAnyRole(WORKER, SHIFT_MANAGER, ADMIN)
+                .antMatchers(HttpMethod.PATCH, "/api/orders/retrieved/*").hasAnyRole(ADMIN, SHIFT_MANAGER)
+                .antMatchers(HttpMethod.POST, "/api/orders/*").hasAnyRole(ADMIN, SHIFT_MANAGER)
+                .antMatchers(HttpMethod.PATCH, "/api/orders/collected/*").hasAnyRole(ADMIN, SHIFT_MANAGER)
+                .antMatchers(HttpMethod.GET, "/api/orders/worker/*").hasAnyRole(ADMIN, SHIFT_MANAGER)
+                .antMatchers(HttpMethod.GET, "/api/orders/active/worker/*").hasAnyRole(WORKER, SHIFT_MANAGER)
+                .antMatchers(HttpMethod.GET, "/api/orders/*/assign/*").hasAnyRole(WORKER, SHIFT_MANAGER)
+
+                .antMatchers(HttpMethod.GET, "/api/warehouse/*").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/warehouse/*").authenticated()
+
+                .anyRequest().hasAuthority(ADMIN)
                 .and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
@@ -67,7 +105,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder());
     }
 
-    @Bean
+   /* @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
@@ -77,6 +115,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
+    }*/
 
 }

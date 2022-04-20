@@ -1,13 +1,12 @@
 package com.adbt.adbtproject.controller;
 
 import com.adbt.adbtproject.entities.ContactInfo;
+import com.adbt.adbtproject.entities.Role;
+import com.adbt.adbtproject.entities.RoleOptions;
 import com.adbt.adbtproject.entities.User;
 import com.adbt.adbtproject.entities.validate.EmailValidator;
 import com.adbt.adbtproject.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.index.IndexInfo;
-import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,9 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "api/users", consumes = {"*/*"})
@@ -75,6 +72,32 @@ public class UserApi {
 
         try {
             if (result.hasErrors() || !constraintViolations.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            user.setRoleSet(new HashSet<>(List.of(new Role(RoleOptions.ROLE_USER))));
+            userRepo.save(user);
+        } catch (RuntimeException exception) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/worker")
+    public ResponseEntity<User> createNotUser(@RequestBody @Valid User user, BindingResult result) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        try {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<ContactInfo>> constraintViolations = validator.validate(user.getContactInfo(), EmailValidator.class);
+
+        try {
+            if (result.hasErrors() || !constraintViolations.isEmpty() ||
+                    (Objects.requireNonNull(user.getRoleSet()).size() == 1 &&
+                            user.getRoleSet().contains(new Role(RoleOptions.ROLE_USER)))) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             userRepo.save(user);
