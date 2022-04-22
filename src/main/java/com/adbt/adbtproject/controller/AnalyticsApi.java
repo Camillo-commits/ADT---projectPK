@@ -146,6 +146,26 @@ public class AnalyticsApi {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/worstWorkersByNumberOfOrdersDelivered")
+    public ResponseEntity<Object> getWorstWorkersByNumberOfOrdersDelivered() {
+
+        MongoClient mongoClient = MongoClients.create(DB_URI);
+        MongoDatabase database = mongoClient.getDatabase("warehouse");
+        MongoCollection<Document> collection = database.getCollection("users");
+        List<String> result = new ArrayList<>();
+        collection.aggregate(Arrays.asList(
+                Aggregates.match(Filters.exists("orders")),
+                Aggregates.unwind("$orders"),
+                Aggregates.match(Filters.exists("orders.dateOfCollection")),
+                Aggregates.group("$_id", Accumulators.addToSet("orders", "$orders")),
+                Aggregates.sort(Sorts.ascending("orders")),
+                Aggregates.out("result")
+
+        )).forEach(document -> result.add(document.toJson()));
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     private Map<String, User> getUserByCountry(boolean isBest) {
         List<User> users = userRepo.findAll();
         Set<String> countries = users.stream().map(u -> u.getAddress().getCountry()).collect(Collectors.toSet());
